@@ -7,21 +7,12 @@ var port = process.env.PORT || 3000;
 app.listen(port);
 
 app.get('/', function (req, res) {
-	res.sendfile(__dirname + '/index.html');
+  res.sendfile(__dirname + '/index.html');
 });
 
-var slurs = ['nigger', 'polack', 'white power', 'niggers', 'paki', 'niggerz', 'nigaboo', 
-            'niglet', 'mexinigger', 'mexi-nigger', 'mexi nigger', 'jigaboo', 'midget', 'eskimo', 
-            'jungle bunny', 'chink', 'chinky', 'coolie', 'coon', 'cracka', 'dago', 'towel head',
-            'darky', 'darkey', 'darkie', 'dink', 'sand nigger', 'dune coon', 'gook', 
-            'gooky', 'guido', 'half-breed', 'kafir', 'Kaffir', 'mosshead', 'nig-nog', 
-            'porch monkey', 'nigra', 'niggra', 'nigruh', 'thicklips', 'tar baby', 'chinaman', 
-            'Honky', 'goombah', 'wop', 'heeb', 'kike', 'kyke', 'gypped', 'jewed down', 
-            'indian giver', 'cotton picker', 'lawn jockey', 'buddhahead', 'chunt', 'cliff ape', 
-            'dog fucker', 'dot-head', 'ditchpig', 'dirt-worshipper', 'mulatto', 'africoon', 
-            'americoon', 'biscuit lip', 'chain dragger', 'colored people'];
+var slurs = ['some', 'words', 'to', 'track'];
 
-var responses = ['I saw your tweet on slurtracker.com and I totally disapprove!',
+/*var responses = ['I saw your tweet on slurtracker.com and I totally disapprove!',
                  'Your tweet showed up on slurTracker.com and you should be ashamed of yourself!',
                  'Your gross tweet was on slurtracker.com and I dont like it.',
                  'Did you know that what you tweeted showed up on slurtracker.com? It did, jerk.',
@@ -34,7 +25,7 @@ var responses = ['I saw your tweet on slurtracker.com and I totally disapprove!'
                  "For shame! Using slurs like that! You can't hide from slurTracker.com!!!",
                  "I'll tell your mom! Think of what she'll say when her baby showed up on slurTracker.com!",
                  "You'll never get anywhere in this world slurring like that! Except on slurTracker.com!",]
-
+*/
 var reply_names = new Array();
 
 io.sockets.on('connection', function (socket) {
@@ -51,12 +42,10 @@ io.sockets.on('connection', function (socket) {
       };
     };
 
-    if ( slurFound && tweet.user['lang'] == 'en' && text.indexOf('honky tonk') == -1 && text.indexOf('Honky Tonk') == -1 ) {
+    if ( slurFound ) {
       socket.emit('stream', tweet);
     }; 
   });
-
-   
 
   // Disapproval Handler
   socket.on('disapprove', function (data) {
@@ -96,10 +85,10 @@ io.configure(function () {
 
 
 var T = new Twit({
-    consumer_key:         'esaOWFilC9ytkU8Wd7V8g'
-  , consumer_secret:      'hpMt15RRqyxLUz4pkGBYUXQR7TRpCl7Qan1CnyGe2CI'
-  , access_token:         '587711519-w4faSgouqMHKRlQ4AcH8EgJuA6whWGnBnlcSXJoR'
-  , access_token_secret:  'wQCoPQIdMV0LdUe35ty98FxiBdJpu0jVNpRKbD2k'
+    consumer_key:         '...'
+  , consumer_secret:      '...'
+  , access_token:         '...'
+  , access_token_secret:  '...'
 });
 
 var stream = T.stream('statuses/filter', { track:slurs.join(',') });
