@@ -1,0 +1,240 @@
+<html>
+<head>
+	
+  <title>Slur Tracker</title>
+  <link rel="SHORTCUT ICON" href="http://dl.dropbox.com/u/12840891/shit.png">
+  <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <style type="text/css">
+      html { height: 100% }
+      body { height: 100%; margin: 0; padding: 0 }
+      #map_canvas { 
+        height: 100%; 
+      }
+      
+      #title { font-size: 30px; 
+        color: #333; 
+        background-color: #fff; 
+        z-index: 999; 
+        position: fixed; 
+        top: 20px; 
+        margin-left: 0px; 
+        height: 30px; 
+        font-family: Helvetica; 
+        padding: 10px; 
+        width: 300px;
+        -moz-box-shadow:    0px 2px 2px 3px #666;
+        -webkit-box-shadow: 0px 2px 2px 3px #666;
+        box-shadow:         0px 2px 2px 3px #666;
+      }
+      #title-container { 
+        background-color: #333; 
+        width: 100%; 
+        position: fixed; 
+        top: 0px; 
+        height:30px; 
+        margin-left: 0px; 
+        margin-right: 0px; 
+      }
+      .container { 
+        width:100%; 
+        margin-left: auto; 
+        margin-right: auto; 
+      }
+      #stream { 
+        z-index: 999; 
+        background-color: #fff; 
+        position: fixed; 
+        bottom: 20px; 
+        padding: 10px; 
+        font-size: small; 
+        display: none; 
+      }
+      #stream li { list-style-type: none }
+    </style>
+  <script type="text/javascript"
+      src="http://maps.googleapis.com/maps/api/js?key=AIzaSyA1ICWhIlpdeRAWe5A1K_Ju7TSZtPmebIg&sensor=true">
+  </script>
+
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script type='text/javascript' src='https://www.google.com/jsapi'></script>
+
+</head>
+
+<body onload="initialize()">
+  <div id="title">slur<b>Tracker</b> 
+    <div style="float:right;padding-top:10px;"><a href="https://twitter.com/share" class="twitter-share-button" data-via="SlurTracker">Tweet</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+</div></div>
+  
+    <div id="map_canvas" style="width:100%; height:100%; bottom:0px; position:absolute;"></div>
+  
+  
+	<ul id="stream">
+	</ul>
+  <div class="info"></div>
+  <div id="tweet-success" style="disaplay:none;z-index:999;position:fixed; top: 10px; left:360px;"></div>
+<script>
+  
+  // Local Dev an Prod switch
+  var socket = io.connect('http://slurtracker.herokuapp.com/');
+  //var socket = io.connect('http://localhost:3000');
+  
+  var map,
+      infowindow = new google.maps.InfoWindow({
+        maxWidth: 350
+      }),
+     geocoder = new google.maps.Geocoder(),
+     icon = 'http://dl.dropbox.com/u/12840891/slur-icons/RacistTweet_small_icon.png';
+
+  
+
+  socket.on('bad-reply', function (reply) {
+      $('#tweet-success').html('<h1>Cleaning up!</h1>').fadeIn();
+      setTimeout("$('#tweet-success').fadeOut()", 8000);
+
+      console.log(reply);
+  });
+
+  socket.on('reply', function(reply) {
+      console.log(reply);
+      $('#tweet-success').html('<h2>Making the world a better place!</h2> ' +
+                         '<a target="_blank" href="http://twitter.com/#!/' +
+                         reply['user'] + '/status/' +
+                         reply['id'] + '">You did this.</a>').fadeOut(8000);
+  });
+
+  function initialize() {
+        var myOptions = {
+          center: new google.maps.LatLng(35.960223, -81.386719),
+          
+          zoom: 2,
+          
+          mapTypeId: google.maps.MapTypeId.TERRAIN,
+          
+          mapTypeControl: true,
+          mapTypeControlOptions: {
+              style: google.maps.MapTypeControlStyle.DROPDOWN_MENU,
+              position: google.maps.ControlPosition.RIGHT_TOP
+          },
+
+          zoomControl: true,
+          zoomControlOptions: {
+              style: google.maps.ZoomControlStyle.LARGE,
+              position: google.maps.ControlPosition.LEFT_CENTER
+          },
+
+          panControl: false,
+          scaleControl: false,
+          streetViewControl: false,
+        };
+        
+        map = new google.maps.Map(document.getElementById("map_canvas"),
+            myOptions);
+  };
+
+  function geocode(address, callback) {
+        geocoder.geocode( { 'address': address }, function(results, status) {
+            if (status == google.maps.GeocoderStatus.OK) {
+                callback(results[0].geometry.location);
+            }
+            else {
+                callback("Error");
+            }
+        });
+    };
+    
+  socket.on('stream', function (tweet) {
+
+    var user_img = tweet.user['profile_image_url'];
+    var user_name = tweet.user['name'];
+    var screen_name = tweet.user['screen_name'];
+    var text = tweet['text'];
+
+    var tweetBox = '<div class="tweet-container" style="font-family: Helvetica "><div style="padding-right:10px;float:left;"><img src="' + 
+                          user_img + '"></div><b>' + user_name + "</b> &nbsp;&nbsp;<i>" + 
+                          screen_name + "</i><br><br><div style='display: block; padding-left:60px; font-family:Helvetica; font-size: 14px;'>" + 
+                          text + "<br><br><form action='' name='disapprove-form' class='form'><input type='hidden' name='screen_name' value='" + screen_name + "' /><input type='hidden' name='tweet_id' value='" + tweet['id'] + "' /><input type='submit' value='disapprove!' id='butt' /></form>";
+
+    geocode(tweet.user['location'], coded);
+
+    function coded(location) {
+      
+      if (location == "Error") {
+
+        console.log('geocode fail.');
+
+      } else {
+      
+      var tweetCoordinates = new google.maps.LatLng(location['$a'], location['ab']);
+      
+      var marker = new google.maps.Marker({
+
+        map: map,
+        position: tweetCoordinates,
+        title: text,
+        icon: icon,
+        animation: google.maps.Animation.DROP
+      });
+      
+      google.maps.event.addListener(marker, 'click', function() {
+ 
+        marker.setIcon('http://dl.dropbox.com/u/12840891/slur-icons/RacistTweet_small_black_icon.png');
+        infowindow.setContent(tweetBox);
+        infowindow.open(map,marker);
+      
+      });
+    } // end of coded
+    };
+
+    var locale;
+  
+    // if they don't give a location, let's not leave it blank. 
+    if (tweet.user['location'] == '' || tweet.user['location'] == null) {
+	    locale = "I didn't put anything!";
+    } else {
+	    locale = tweet.user['location'];
+    }
+
+    // it's passed our tests, let's add it to the page.
+    currentTweet(tweet, locale);
+
+    function currentTweet (tweet, location) {
+
+      $('#stream').html('<li><b>Tweet:</b> ' + text + '</li>' + '<li><b>Location:</b> ' 
+                        + location + '</li>').fadeIn();
+      
+      var s = setTimeout("$('#stream').fadeOut()", 3000);
+      
+    };
+  });
+$("form").live("submit", function (event) {
+          event.preventDefault();
+
+          var $this = $(this);
+          console.log('clicked!');
+          $('form').fadeOut();
+          
+          var fields = $(this, ":input").serializeArray();
+          //console.log(fields);
+          var values = {};
+          
+          $.each($(this).serializeArray(), function(i, fields) {
+            values[fields.name] = fields.value;
+          });
+          //console.log(values);
+          var screenname = values['screen_name'];
+          var id = values['tweet_id'];
+          console.log(screenname);
+          console.log(id);
+          //$(this).fadeOut();
+          socket.emit('disapprove', { user: screenname, id: id });
+
+          
+          return false;
+        });
+      
+</script>
+
+</body>
+</html>
