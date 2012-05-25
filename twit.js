@@ -10,7 +10,7 @@ app.get('/', function (req, res) {
   res.sendfile(__dirname + '/index.html');
 });
 
-var slurs = ['some', 'words', 'to', 'track'];
+var keywords = ['some', 'words', 'to', 'track'];
 
 /*var responses = ['I saw your tweet on slurtracker.com and I totally disapprove!',
                  'Your tweet showed up on slurTracker.com and you should be ashamed of yourself!',
@@ -77,9 +77,9 @@ io.sockets.on('connection', function (socket) {
 });
 
 io.configure(function () { 
-  io.set("transports", ["xhr-polling"]); 
-  io.set("polling duration", 10);
-  io.set('log level', 1); 
+  io.set("transports", ["xhr-polling"]); // Heroku requires this.
+  io.set("polling duration", 10); // Heroku requires this.
+  io.set('log level', 1); // Prevents messy logs.
 });
 
 
@@ -91,4 +91,4 @@ var T = new Twit({
   , access_token_secret:  '...'
 });
 
-var stream = T.stream('statuses/filter', { track:slurs.join(',') });
+var stream = T.stream('statuses/filter', { track:keywords.join(',') });
