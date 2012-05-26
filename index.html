@@ -1,8 +1,8 @@
 <html>
 <head>
 	
-  <title>Slur Tracker</title>
-  <link rel="SHORTCUT ICON" href="http://dl.dropbox.com/u/12840891/shit.png">
+  <title>Twitter Location Tracker</title>
+  <link rel="SHORTCUT ICON" href="">
   <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
     <style type="text/css">
       html { height: 100% }
@@ -52,7 +52,7 @@
       #stream li { list-style-type: none }
     </style>
   <script type="text/javascript"
-      src="http://maps.googleapis.com/maps/api/js?key=AIzaSyA1ICWhIlpdeRAWe5A1K_Ju7TSZtPmebIg&sensor=true">
+      src="http://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API&sensor=true">
   </script>
 
 	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
@@ -62,21 +62,26 @@
 </head>
 
 <body onload="initialize()">
-  <div id="title">slur<b>Tracker</b> 
-    <div style="float:right;padding-top:10px;"><a href="https://twitter.com/share" class="twitter-share-button" data-via="SlurTracker">Tweet</a>
-<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
-</div></div>
   
-    <div id="map_canvas" style="width:100%; height:100%; bottom:0px; position:absolute;"></div>
+  <div id="title">
+    A twitter<b>Tracker</b> 
+  </div>
   
+  <div id="map_canvas" style="width:100%; height:100%; bottom:0px; position:absolute;">
+  </div>
   
 	<ul id="stream">
 	</ul>
-  <div class="info"></div>
-  <div id="tweet-success" style="disaplay:none;z-index:999;position:fixed; top: 10px; left:360px;"></div>
+
+  <div class="info">
+  </div>
+
+  <div id="tweet-success" style="disaplay:none;z-index:999;position:fixed; top: 10px; left:360px;">
+  </div>
+
 <script>
   
-  // Local Dev an Prod switch
+  // Local Dev/Prod switch
   var socket = io.connect('http://slurtracker.herokuapp.com/');
   //var socket = io.connect('http://localhost:3000');
   
@@ -85,9 +90,7 @@
         maxWidth: 350
       }),
      geocoder = new google.maps.Geocoder(),
-     icon = 'http://dl.dropbox.com/u/12840891/slur-icons/RacistTweet_small_icon.png';
-
-  
+     //icon = 'http://icon_url.png';
 
   socket.on('bad-reply', function (reply) {
       $('#tweet-success').html('<h1>Cleaning up!</h1>').fadeIn();
@@ -173,13 +176,13 @@
         map: map,
         position: tweetCoordinates,
         title: text,
-        icon: icon,
+        //icon: icon,  
         animation: google.maps.Animation.DROP
       });
       
       google.maps.event.addListener(marker, 'click', function() {
  
-        marker.setIcon('http://dl.dropbox.com/u/12840891/slur-icons/RacistTweet_small_black_icon.png');
+        // marker.setIcon('http://visited-marker/url.png');
         infowindow.setContent(tweetBox);
         infowindow.open(map,marker);
       
@@ -207,33 +210,7 @@
       var s = setTimeout("$('#stream').fadeOut()", 3000);
       
     };
-  });
-$("form").live("submit", function (event) {
-          event.preventDefault();
-
-          var $this = $(this);
-          console.log('clicked!');
-          $('form').fadeOut();
-          
-          var fields = $(this, ":input").serializeArray();
-          //console.log(fields);
-          var values = {};
-          
-          $.each($(this).serializeArray(), function(i, fields) {
-            values[fields.name] = fields.value;
-          });
-          //console.log(values);
-          var screenname = values['screen_name'];
-          var id = values['tweet_id'];
-          console.log(screenname);
-          console.log(id);
-          //$(this).fadeOut();
-          socket.emit('disapprove', { user: screenname, id: id });
-
-          
-          return false;
-        });
-      
+  });      
 </script>
 
 </body>
