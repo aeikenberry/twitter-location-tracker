@@ -96,25 +96,12 @@
       infowindow = new google.maps.InfoWindow({
         maxWidth: 350
       }),
-     geocoder = new google.maps.Geocoder(),
+     geocoder = new google.maps.Geocoder();
      //icon = 'http://icon_url.png';
 
-  socket.on('bad-reply', function (reply) {
-      $('#tweet-success').html('<h1>Cleaning up!</h1>').fadeIn();
-      setTimeout("$('#tweet-success').fadeOut()", 8000);
-
-      console.log(reply);
-  });
-
-  socket.on('reply', function(reply) {
-      console.log(reply);
-      $('#tweet-success').html('<h2>Making the world a better place!</h2> ' +
-                         '<a target="_blank" href="http://twitter.com/#!/' +
-                         reply['user'] + '/status/' +
-                         reply['id'] + '">You did this.</a>').fadeOut(8000);
-  });
-
+ 
   function initialize() {
+      // Set up your Google map
         var myOptions = {
           center: new google.maps.LatLng(35.960223, -81.386719),
           
@@ -143,6 +130,7 @@
             myOptions);
   };
 
+  // this function calls Google's Geocoder API.
   function geocode(address, callback) {
         geocoder.geocode( { 'address': address }, function(results, status) {
             if (status == google.maps.GeocoderStatus.OK) {
@@ -161,11 +149,9 @@
     var screen_name = tweet.user['screen_name'];
     var text = tweet['text'];
 
-    var tweetBox = '<div class="tweet-container" style="font-family: Helvetica "><div style="padding-right:10px;float:left;"><img src="' + 
-                          user_img + '"></div><b>' + user_name + "</b> &nbsp;&nbsp;<i>" + 
-                          screen_name + "</i><br><br><div style='display: block; padding-left:60px; font-family:Helvetica; font-size: 14px;'>" + 
-                          text + "<br><br><form action='' name='disapprove-form' class='form'><input type='hidden' name='screen_name' value='" + screen_name + "' /><input type='hidden' name='tweet_id' value='" + tweet['id'] + "' /><input type='submit' value='disapprove!' id='butt' /></form>";
-
+    var tweetBox = 'Place what you want to show up in your infoBox here';
+    
+    // Send this tweet to the geocoder to grab it's coordinates
     geocode(tweet.user['location'], coded);
 
     function coded(location) {
