@@ -1,6 +1,6 @@
 {
-  "name": "racizm",
-  "version": "0.1.0",
+  "name": "twitter-tracker-by-location",
+  "version": "0.0.1",
   "engines": {
     "node": "0.6.17",
     "npm":  "1.0.x"

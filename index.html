@@ -58,7 +58,9 @@
     </script>
 
     <!-- Import Jquery -->
-	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	  <script type="text/javascript" 
+      src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js">
+    </script>
     
     <!-- Socket.io creates this, you need to import it! -->
     <script src="/socket.io/socket.io.js"></script>
@@ -70,18 +72,14 @@
 
 <body onload="initialize()">
   
-  <div id="title">
-    A twitter<b>Tracker</b> 
-  </div>
+  <div id="title">A twitter<b>Tracker</b></div>
   
   <div id="map_canvas" style="width:100%; height:100%; bottom:0px; position:absolute;">
   </div>
   
-	<ul id="stream">
-	</ul>
+	<ul id="stream"></ul>
 
-  <div class="info">
-  </div>
+  <div class="info"></div>
 
   <div id="tweet-success" style="disaplay:none;z-index:999;position:fixed; top: 10px; left:360px;">
   </div>
@@ -89,18 +87,20 @@
 <script>
   
   // Local Dev/Prod switch
-  var socket = io.connect('http://slurtracker.herokuapp.com/');
+  var socket = io.connect('http://yourapp.herokuapp.com/');
   //var socket = io.connect('http://localhost:3000');
   
   var map,
-      infowindow = new google.maps.InfoWindow({
+      geocoder = new google.maps.Geocoder();
+     //icon = 'http://icon_url.png';
+  
+  // Set up a single InfoWindow, so that only one will be open at a time.
+  var infowindow = new google.maps.InfoWindow({
         maxWidth: 350
       }),
-     geocoder = new google.maps.Geocoder();
-     //icon = 'http://icon_url.png';
-
  
   function initialize() {
+
       // Set up your Google map
         var myOptions = {
           center: new google.maps.LatLng(35.960223, -81.386719),
@@ -148,22 +148,27 @@
     var user_name = tweet.user['name'];
     var screen_name = tweet.user['screen_name'];
     var text = tweet['text'];
+    var locale;
 
     var tweetBox = 'Place what you want to show up in your infoBox here';
     
     // Send this tweet to the geocoder to grab it's coordinates
     geocode(tweet.user['location'], coded);
 
+    // Once it's geocoded, we can drop it on the map.
     function coded(location) {
       
-      if (location == "Error") {
+      if (location == "Error") { // If the location isn't valid
 
         console.log('geocode fail.');
 
-      } else {
+      } 
       
+      // Creates a LatLng object for the coordinates
       var tweetCoordinates = new google.maps.LatLng(location['$a'], location['ab']);
       
+      // Creates the marker. Define icon as a png and assign it here to 
+      // use a custom icon.
       var marker = new google.maps.Marker({
 
         map: map,
@@ -173,17 +178,16 @@
         animation: google.maps.Animation.DROP
       });
       
+      // What to do when a marker is clicked
       google.maps.event.addListener(marker, 'click', function() {
  
         // marker.setIcon('http://visited-marker/url.png');
         infowindow.setContent(tweetBox);
         infowindow.open(map,marker);
       
-      });
-    } // end of coded
-    };
+      }); 
 
-    var locale;
+    };   
   
     // if they don't give a location, let's not leave it blank. 
     if (tweet.user['location'] == '' || tweet.user['location'] == null) {
@@ -192,18 +196,20 @@
 	    locale = tweet.user['location'];
     }
 
-    // it's passed our tests, let's add it to the page.
+    // it's passed our tests, put it in the 'ticker' at the bottom.
     currentTweet(tweet, locale);
 
     function currentTweet (tweet, location) {
 
-      $('#stream').html('<li><b>Tweet:</b> ' + text + '</li>' + '<li><b>Location:</b> ' 
-                        + location + '</li>').fadeIn();
+      $('#stream').html('<li><b>Tweet:</b> ' + text + '</li>' + 
+                        '<li><b>Location:</b> ' + location + '</li>').fadeIn();
       
       var s = setTimeout("$('#stream').fadeOut()", 3000);
       
     };
-  });      
+
+  });
+
 </script>
 
 </body>
