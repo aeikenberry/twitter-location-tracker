@@ -11,7 +11,7 @@ app.get('/', function (req, res) {
 });
 
 // Socket.io config
-io.configure(function () { 
+io.configure(function () {
   io.set("transports", ["xhr-polling"]); // Heroku requires this (of socket.io).
   io.set("polling duration", 10); // Heroku requires this (of socket.io).
   io.set('log level', 1); // Prevents overly-messy logs.
@@ -21,9 +21,9 @@ io.configure(function () {
 var keywords = ['some', 'words', 'or phrases', 'to', 'track'];
 
 var T = new Twit({
-    consumer_key:         '...', 
-    consumer_secret:      '...', 
-    access_token:         '...', 
+    consumer_key:         '...',
+    consumer_secret:      '...',
+    access_token:         '...',
     access_token_secret:  '...'
 });
 
@@ -42,8 +42,8 @@ io.sockets.on('connection', function (socket) {
       if ( text.indexOf(keywords[i]) >= 0 ) {
         keywordFound = true;
         break;
-      };
-    };
+      }
+    }
 
     if ( keywordFound ) {
       socket.emit('stream', tweet);
