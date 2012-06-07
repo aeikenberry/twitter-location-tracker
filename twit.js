@@ -6,6 +6,7 @@ var Twit = require('twit'),
 // Set up your app's environment
 var port = process.env.PORT || 3000;
 app.listen(port);
+app.use(express.static(__dirname + '/public'));
 app.get('/', function (req, res) {
   res.sendfile(__dirname + '/index.html');
 });
