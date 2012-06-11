@@ -1,6 +1,7 @@
 // Do some imports
 var Twit = require('twit'),
-    app = require('express').createServer(),
+    express = require('express');
+    app = express.createServer(),
     io = require('socket.io').listen(app);
 
 // Set up your app's environment
